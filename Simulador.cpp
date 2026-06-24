@@ -1,90 +1,177 @@
 #include <iostream>
 #include <cstdlib>
-#include <windows.h> 
+
 #include "VARIABLES_GLOBALES.h"
 #include "BASE_DE_DATOS.h"
-#include "SIMULADOR.h"
+#include "Simulador.h"
 
 using namespace std;
 
-int calcularEventoAleatorio(int limiteInferior, int limiteSuperior) {
-    return limiteInferior + rand() % (limiteSuperior - limiteInferior + 1);
+
+//==================== EVENTO ALEATORIO ====================
+
+int calcularEventoAleatorio(int limiteInferior,
+                            int limiteSuperior)
+{
+    return limiteInferior +
+           rand() % (limiteSuperior - limiteInferior + 1);
 }
 
-bool imprimirMarcador(int minuto, int golesL, int golesV, int indiceLocal, int indiceVisitante) {
-    cout << "=========================================" << endl;
-    cout << "           PARTIDO EN VIVO               " << endl;
-    cout << "=========================================" << endl;
-    
-    if (minuto <= 90) {
-        cout << " Minuto: " << minuto << "'" << endl;
-    } else {
-        cout << " RESULTADO FINAL" << endl;
-    }
-    
-    cout << "-----------------------------------------" << endl;
-    cout << " " << equipos[indiceLocal].nombre << " [" << golesL << "] - [" << golesV << "] " << equipos[indiceVisitante].nombre << endl;
-    cout << "=========================================\n" << endl;
-    
+
+//==================== IMPRIMIR MARCADOR ====================
+
+bool imprimirMarcador(int minuto,
+                      int golesL,
+                      int golesV,
+                      int indiceLocal,
+                      int indiceVisitante)
+{
+    cout << "Minuto " << minuto << endl;
+
+    cout << equipos[indiceLocal].nombre
+         << " "
+         << golesL
+         << " - "
+         << golesV
+         << " "
+         << equipos[indiceVisitante].nombre
+         << endl
+         << endl;
+
     return true;
 }
 
-bool simularPartidoVivo(int indiceLocal, int indiceVisitante) {
-    int minuto = 1;
+
+//==================== SIMULAR PARTIDO ====================
+
+bool simularPartidoVivo(int indiceLocal,
+                        int indiceVisitante)
+{
     int golesL = 0;
+
     int golesV = 0;
-    int probabilidadEvento;
-    bool partidoEnCurso = true;
 
-    system("cls");
-    cout << "\nLos equipos salen a la cancha..." << endl;
-    Sleep(2000);
+    int evento;
 
-    while (partidoEnCurso) {
-        system("cls");
-        imprimirMarcador(minuto, golesL, golesV, indiceLocal, indiceVisitante);
 
-        probabilidadEvento = calcularEventoAleatorio(1, 100);
+    cout << endl;
 
-        if (probabilidadEvento >= 1 && probabilidadEvento <= 3) {
+    cout << "===== PARTIDO EN VIVO =====" << endl;
+
+    cout << equipos[indiceLocal].nombre
+         << " vs "
+         << equipos[indiceVisitante].nombre
+         << endl
+         << endl;
+
+
+    for(int minuto = 0; minuto <= 90; minuto += 5)
+    {
+        evento = calcularEventoAleatorio(1,100);
+
+        if(evento <= 5)
+        {
             golesL++;
-            cout << "¡GOOOOOOOOOOOOOOOL DE " << equipos[indiceLocal].nombre << "!" << endl;
-            Sleep(2000);
-        } else if (probabilidadEvento >= 4 && probabilidadEvento <= 6) {
+
+            cout << "GOOOOL DE "
+                 << equipos[indiceLocal].nombre
+                 << endl;
+        }
+
+        else if(evento >= 96)
+        {
             golesV++;
-            cout << "¡GOOOOOOOOOOOOOOOL DE " << equipos[indiceVisitante].nombre << "!" << endl;
-            Sleep(2000);
-        } else if (probabilidadEvento == 50) {
-            cout << "¡Falta peligrosa! Tarjeta Amarilla." << endl;
-            Sleep(1500);
+
+            cout << "GOOOOL DE "
+                 << equipos[indiceVisitante].nombre
+                 << endl;
         }
 
-        minuto++;
-
-        if (minuto > 90) {
-            partidoEnCurso = false;
-        } else {
-            Sleep(800); 
-        }
+        imprimirMarcador(minuto,golesL, golesV,indiceLocal,indiceVisitante);
     }
 
-    system("cls");
-    imprimirMarcador(90, golesL, golesV, indiceLocal, indiceVisitante);
+
+    //==================== RESULTADO FINAL ====================
+
+    cout << "===== RESULTADO FINAL =====" << endl
+         << endl;
+
+    cout << equipos[indiceLocal].nombre
+         << " "
+         << golesL
+         << " - "
+         << golesV
+         << " "
+         << equipos[indiceVisitante].nombre
+         << endl
+         << endl;
+
+
+    //==================== MATRIZ DE GOLES ====================
+
     matrizGoles[indiceLocal][indiceVisitante] += golesL;
+
     matrizGoles[indiceVisitante][indiceLocal] += golesV;
-    
-    if (golesL > golesV) {
-        matrizVictorias[indiceLocal][indiceVisitante] += 1;
-        cout << "\n¡Victoria para " << equipos[indiceLocal].nombre << "!" << endl;
-    } else if (golesV > golesL) {
-        matrizVictorias[indiceVisitante][indiceLocal] += 1;
-        cout << "\n¡Victoria para " << equipos[indiceVisitante].nombre << "!" << endl;
-    } else {
-        cout << "\n¡El partido termina en Empate!" << endl;
+
+
+    //==================== PARTIDOS JUGADOS ====================
+
+    equipos[indiceLocal].partidosJugados++;
+
+    equipos[indiceVisitante].partidosJugados++;
+
+
+    //==================== GOLES A FAVOR Y EN CONTRA ====================
+
+    equipos[indiceLocal].golesFavor += golesL;
+
+    equipos[indiceLocal].golesContra += golesV;
+
+    equipos[indiceVisitante].golesFavor += golesV;
+
+    equipos[indiceVisitante].golesContra += golesL;
+
+
+    //==================== VICTORIAS, DERROTAS Y EMPATES ====================
+
+    if(golesL > golesV)
+    {
+        matrizVictorias[indiceLocal][indiceVisitante]++;
+
+        equipos[indiceLocal].victorias++;
+
+        equipos[indiceVisitante].derrotas++;
     }
+
+    else if(golesV > golesL)
+    {
+        matrizVictorias[indiceVisitante][indiceLocal]++;
+
+        equipos[indiceVisitante].victorias++;
+
+        equipos[indiceLocal].derrotas++;
+    }
+
+    else
+    {
+        equipos[indiceLocal].empates++;
+
+        equipos[indiceVisitante].empates++;
+    }
+
+
+    //==================== GUARDAR CAMBIOS ====================
+
+    guardarEquipos();
+
     guardarMatrizGoles();
+
     guardarMatrizVictorias();
-    
-    system("pause");
+
+
+    cout << endl;
+
+    cout << "Estadisticas actualizadas correctamente." << endl;
+
     return true;
 }
