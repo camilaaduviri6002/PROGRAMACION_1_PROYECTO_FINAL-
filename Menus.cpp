@@ -4,7 +4,7 @@
 #include "VARIABLES_GLOBALES.h"
 #include "USUARIO.h"
 #include "SIMULADOR.h"
-#include "MotorApuestas.h" 
+#include "MOTOR_APUESTAS.h" // Corregido a mayusculas
 #include "MENUS.h"
 
 using namespace std;
@@ -74,7 +74,7 @@ bool menuEquipos() {
     return true;
 }
 
-// SUBMENÚ: APUESTAS 
+// SUBMENÚ: APUESTAS (Corregido para encajar con el codigo de Camila)
 bool menuApuestas() {
     int opcion;
     bool salirSubmenu = false;
@@ -83,23 +83,28 @@ bool menuApuestas() {
         system("cls");
         cout << "=== MENU APUESTAS ===" << endl;
         cout << "1. Registrar nueva apuesta" << endl;
-        cout << "2. Ver todas las apuestas activas" << endl;
-        cout << "3. Buscar apuestas por usuario" << endl;
+        cout << "2. Ver todas las apuestas" << endl;
+        cout << "3. Buscar historial por usuario" << endl;
         cout << "4. Volver" << endl;
         cout << "Opcion: ";
         cin >> opcion;
 
         if (opcion == 1) {
-            RegistrarApuesta();
-            GuardarTodo();
+            // Llama a la funcion de Camila (ya guarda en binario por dentro)
+            registrarApuesta();
             system("pause");
         } else if (opcion == 2) {
-            cout << "\n--- REGISTRO HISTORICO DE APUESTAS ---";
-            MostrarApuestas(0); // El 0 arranca la funcion recursiva
-            cout << "\n\n>> TOTAL ACUMULADO EN SISTEMA: " << TotalApostado(0) << " Bs <<\n" << endl;
+            cout << "\n--- REGISTRO HISTORICO DE APUESTAS ---" << endl;
+            mostrarApuestas(); 
             system("pause");
         } else if (opcion == 3) {
-            BuscarUsuario(); // Funcion de MotorApuestas.h
+            char userApuesta[30];
+            cout << "\nIngrese el username a buscar: ";
+            cin >> userApuesta;
+            
+            cout << "\n--- HISTORIAL DE " << userApuesta << " ---" << endl;
+            mostrarHistorialUsuario(userApuesta);
+            cout << ">> TOTAL APOSTADO: " << totalApostadoUsuario(userApuesta) << " Bs <<" << endl;
             system("pause");
         } else if (opcion == 4) {
             salirSubmenu = true;
@@ -127,7 +132,6 @@ bool menuSimulador() {
     cout << "Ingrese el CODIGO del equipo Visitante: ";
     cin >> idVisitante;
 
-    // Verificamos que no sea el mismo equipo y que existan
     if (idLocal == idVisitante) {
         cout << "Error: Un equipo no puede jugar contra si mismo." << endl;
         system("pause");
