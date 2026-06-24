@@ -1,24 +1,26 @@
 #include <iostream>
-#include <cstdlib>
-
 #include "INICIAR_SISTEMA.h"
-#include "MENUS.h"
+#include "Menus.h"
 
 using namespace std;
 
-int main() {
-    bool sistemaIniciado;
+int main()
+{
+    cout<<"========================================"<<endl;
 
-    cout << "==================================================" << endl;
-    cout << "   INICIANDO SISTEMA DE PREDICCION DE FUTBOL...   " << endl;
-    cout << "==================================================" << endl;
+    cout<<" SISTEMA DE PREDICCION DE FUTBOL "<<endl;
+
+    cout<<"========================================"<<endl;
+
+    cout<<endl;
+
     inicializarSistema();
-    cout << "\nPresione ENTER para ir al Menu Principal..." << endl;
-    system("pause > nul"); 
-    sistemaIniciado = menuPrincipal();
-    if (sistemaIniciado) {
-        cout << "\nApagando el sistema de forma segura. ¡Hasta pronto!" << endl;
-    }
+
+    menuPrincipal();
+
+    cout<<endl;
+
+    cout<<"Gracias por utilizar el sistema."<<endl;
 
     return 0;
 }
