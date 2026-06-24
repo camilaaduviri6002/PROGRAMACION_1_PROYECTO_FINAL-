@@ -3,7 +3,7 @@
 
 #include "VARIABLES_GLOBALES.h"
 #include "BASE_DE_DATOS.h"
-#include "USUARIOS.h"
+#include "USUARIO.h"
 
 using namespace std;
 
