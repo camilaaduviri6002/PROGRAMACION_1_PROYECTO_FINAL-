@@ -5,7 +5,7 @@
 #include "USUARIO.h"
 #include "SIMULADOR.h"
 #include "MOTOR_APUESTAS.h" 
-#include "PREDICCION.h" // Se añade la libreria de Camila
+#include "PREDICCION.h" 
 #include "MENUS.h"
 
 using namespace std;
@@ -23,7 +23,8 @@ bool menuUsuarios() {
         cout << "1. Registrar usuario" << endl;
         cout << "2. Iniciar sesion" << endl;
         cout << "3. Mostrar todos los usuarios" << endl;
-        cout << "4. Volver" << endl;
+        cout << "4. Anadir Saldo a una cuenta" << endl; // NUEVA OPCION AÑADIDA
+        cout << "5. Volver" << endl;
         cout << "Opcion: ";
         cin >> opcion;
 
@@ -37,6 +38,31 @@ bool menuUsuarios() {
             mostrarUsuarios();  
             system("pause");
         } else if (opcion == 4) {
+            char userDeposito[30];
+            float montoDeposito;
+            
+            cout << "\nIngrese su username: ";
+            cin >> userDeposito;
+            
+            // Usamos la funcion de Alejandra para buscar si existe
+            int pos = buscarUsuario(userDeposito); 
+            
+            if (pos != -1) {
+                cout << "Ingrese el monto a depositar (Bs): ";
+                cin >> montoDeposito;
+                
+                if (montoDeposito > 0) {
+                    depositarSaldo(pos, montoDeposito); // Llama a la funcion de USUARIO.cpp
+                    cout << "\n¡Deposito exitoso!" << endl;
+                    mostrarSaldo(pos); // Imprime el nuevo saldo total
+                } else {
+                    cout << "Error: El monto debe ser mayor a 0." << endl;
+                }
+            } else {
+                cout << "Error: Usuario no encontrado." << endl;
+            }
+            system("pause");
+        } else if (opcion == 5) {
             salirSubmenu = true;
         } else {
             cout << "Opcion invalida." << endl;
@@ -179,7 +205,6 @@ bool menuPrincipal() {
         } else if (opcion == 2) {
             menuEquipos();
         } else if (opcion == 3) {
-            // Se llama a la funcion matematicas de prediccion
             mostrarPrediccion();
             system("pause");
         } else if (opcion == 4) {
