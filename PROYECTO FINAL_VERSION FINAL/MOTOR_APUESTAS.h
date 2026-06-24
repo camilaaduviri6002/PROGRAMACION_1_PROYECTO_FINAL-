@@ -9,4 +9,4 @@ float totalApostadoUsuario(char username[]);
 void mostrarHistorialUsuario(char username[]);
 
 
-#endif // MOTOR_APUESTAS_H_INCLUDED
+#endif
