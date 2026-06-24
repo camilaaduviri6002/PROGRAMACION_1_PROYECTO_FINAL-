@@ -1,200 +1,118 @@
 #include <iostream>
-#include <fstream>
-#include <string>
+#include <iomanip> // Para redondear los porcentajes a 2 decimales
+#include "VARIABLES_GLOBALES.h"
+#include "PREDICCION.h"
 
 using namespace std;
 
-struct Apuesta
-{
-    int id;
-    string usuario;
-    string equipo1;
-    string equipo2;
-    string resultado;
-    float monto;
-};
+// ==========================================
+// 1. CÁLCULO DE ÍNDICES (Fuerza del Equipo)
+// ==========================================
 
-void RegistrarApuesta(Apuesta apuestas[], int &n)
-{
-    cout << "\nID: ";
-    cin >> apuestas[n].id;
-
-    cin.ignore();
-
-    cout << "Usuario: ";
-    getline(cin, apuestas[n].usuario);
-
-    cout << "Equipo Local: ";
-    getline(cin, apuestas[n].equipo1);
-
-    cout << "Equipo Visitante: ";
-    getline(cin, apuestas[n].equipo2);
-
-    cout << "Resultado (Local/Empate/Visitante): ";
-    getline(cin, apuestas[n].resultado);
-
-    cout << "Monto: ";
-    cin >> apuestas[n].monto;
-
-    n++;
-}
-
-void MostrarApuestas(Apuesta apuestas[], int n, int pos)
-{
-    if(pos >= n)
-        return;
-
-    cout << "\n------------------------";
-    cout << "\nID: " << apuestas[pos].id;
-    cout << "\nUsuario: " << apuestas[pos].usuario;
-    cout << "\nPartido: "
-         << apuestas[pos].equipo1
-         << " vs "
-         << apuestas[pos].equipo2;
-    cout << "\nResultado: "
-         << apuestas[pos].resultado;
-    cout << "\nMonto: "
-         << apuestas[pos].monto;
-
-    MostrarApuestas(apuestas, n, pos + 1);
-}
-
-float TotalApostado(Apuesta apuestas[], int n, int pos)
-{
-    if(pos >= n)
-        return 0;
-
-    return apuestas[pos].monto + TotalApostado(apuestas, n, pos + 1);
-}
-
-int BuscarApuesta(Apuesta apuestas[],int n,int codigo,int pos)
-{
-    if(pos >= n)
-        return -1;
-
-    if(apuestas[pos].id == codigo)
-        return pos;
-
-    return BuscarApuesta(apuestas,n, codigo,pos + 1);
-}
-
-void GuardarApuestas(Apuesta apuestas[],int n,int pos,ofstream &archivo)
-{
-    if(pos >= n)
-        return;
-
-    archivo
-    << apuestas[pos].id << "|"
-    << apuestas[pos].usuario << "|"
-    << apuestas[pos].equipo1 << "|"
-    << apuestas[pos].equipo2 << "|"
-    << apuestas[pos].resultado << "|"
-    << apuestas[pos].monto
-    << endl;
-
-    GuardarApuestas(apuestas,n,pos + 1,archivo);
-}
-
-void GuardarTodo(Apuesta apuestas[], int n)
-{
-    ofstream archivo("Apuestas.txt");
-
-    if(!archivo)
-        return;
-
-    GuardarApuestas(apuestas,n,0,archivo);
-
-    archivo.close();
-}
-
-void CargarApuestas(Apuesta apuestas[], int &n)
-{
-    ifstream archivo("Apuestas.txt");
-
-    if(!archivo)
-        return;
-
-    n = 0;
-
-    while(archivo >> apuestas[n].id)
-    {
-        archivo.ignore();
-
-        getline(archivo,apuestas[n].usuario,'|');
-
-        getline(archivo,apuestas[n].equipo1,'|');
-
-        getline(archivo, apuestas[n].equipo2,'|');
-
-        getline(archivo, apuestas[n].resultado,'|');
-
-        archivo >> apuestas[n].monto;
-
-        archivo.ignore();
-
-        n++;
+float calcularIndiceOfensivo(int codigoEquipo) {
+    // Evitamos division entre cero si el sistema es nuevo y no hay partidos
+    if (equipos[codigoEquipo].partidosJugados == 0) {
+        // Si no hay historial, su Nivel dicta su capacidad ofensiva
+        return (float)equipos[codigoEquipo].nivel; 
     }
-
-    archivo.close();
+    // Promedio de goles marcados por partido
+    return (float)equipos[codigoEquipo].golesFavor / equipos[codigoEquipo].partidosJugados;
 }
 
-void ReporteUsuario(Apuesta apuestas[],int n,string usuario,int pos)
-{
-    if(pos >= n)
-        return;
-
-    if(apuestas[pos].usuario == usuario)
-    {
-        cout << "\n------------------------";
-        cout << "\nID: "
-             << apuestas[pos].id;
-
-        cout << "\nUsuario: "
-             << apuestas[pos].usuario;
-
-        cout << "\nPartido: "
-             << apuestas[pos].equipo1
-             << " vs "
-             << apuestas[pos].equipo2;
-
-        cout << "\nResultado: "
-             << apuestas[pos].resultado;
-
-        cout << "\nMonto: "
-             << apuestas[pos].monto;
+float calcularIndiceDefensivo(int codigoEquipo) {
+    if (equipos[codigoEquipo].partidosJugados == 0) {
+        // Nivel alto = buena defensa (por eso se resta de 10)
+        return 10.0f - (float)equipos[codigoEquipo].nivel;
     }
-
-    ReporteUsuario(apuestas,n,usuario,pos + 1);
+    // Promedio de goles recibidos por partido
+    return (float)equipos[codigoEquipo].golesContra / equipos[codigoEquipo].partidosJugados;
 }
 
-float TotalUsuario(Apuesta apuestas[],int n,string usuario,int pos)
-{
-    if(pos >= n)
-        return 0;
+// ==========================================
+// 2. CÁLCULO DE PROBABILIDADES
+// ==========================================
 
-    if(apuestas[pos].usuario == usuario)
-    {
-        return apuestas[pos].monto +TotalUsuario(apuestas,n,usuario,pos + 1);
+float calcularProbabilidadLocal(int codigoLocal, int codigoVisitante) {
+    // Calculamos los "Puntos de Fuerza" combinando indices, nivel y matriz historica (H2H)
+    float fuerzaLocal = calcularIndiceOfensivo(codigoLocal) + equipos[codigoLocal].nivel + matrizVictorias[codigoLocal][codigoVisitante];
+    float fuerzaVisitante = calcularIndiceOfensivo(codigoVisitante) + equipos[codigoVisitante].nivel + matrizVictorias[codigoVisitante][codigoLocal];
+    float fuerzaEmpate = 5.0f; // Constante base
+
+    float fuerzaTotal = fuerzaLocal + fuerzaVisitante + fuerzaEmpate;
+    
+    if (fuerzaTotal == 0) return 33.33f; // Seguridad matemática
+    
+    // Regla de 3 simple + Ventaja de Localia (+5%)
+    return ((fuerzaLocal / fuerzaTotal) * 100.0f) + 5.0f;
+}
+
+float calcularProbabilidadVisitante(int codigoLocal, int codigoVisitante) {
+    float fuerzaLocal = calcularIndiceOfensivo(codigoLocal) + equipos[codigoLocal].nivel + matrizVictorias[codigoLocal][codigoVisitante];
+    float fuerzaVisitante = calcularIndiceOfensivo(codigoVisitante) + equipos[codigoVisitante].nivel + matrizVictorias[codigoVisitante][codigoLocal];
+    float fuerzaEmpate = 5.0f; 
+
+    float fuerzaTotal = fuerzaLocal + fuerzaVisitante + fuerzaEmpate;
+    
+    if (fuerzaTotal == 0) return 33.33f;
+    
+    // Regla de 3 simple - Desventaja de Visita (-5%)
+    float probVisitante = ((fuerzaVisitante / fuerzaTotal) * 100.0f) - 5.0f;
+    
+    if (probVisitante < 0) return 0.0f;
+    return probVisitante;
+}
+
+float calcularProbabilidadEmpate(int codigoLocal, int codigoVisitante) {
+    // El empate es simplemente lo que sobra para llegar al 100% exacto
+    float probLocal = calcularProbabilidadLocal(codigoLocal, codigoVisitante);
+    float probVisitante = calcularProbabilidadVisitante(codigoLocal, codigoVisitante);
+    
+    float probEmpate = 100.0f - (probLocal + probVisitante);
+    
+    if (probEmpate < 0) return 0.0f;
+    return probEmpate;
+}
+
+// ==========================================
+// 3. INTERFAZ DEL MÓDULO (Para el Usuario)
+// ==========================================
+
+void mostrarPrediccion() {
+    int idLocal, idVisitante;
+
+    system("cls");
+    cout << "=== MODULO DE PREDICCION ===" << endl;
+    cout << "Ingrese el CODIGO del equipo Local: ";
+    cin >> idLocal;
+    cout << "Ingrese el CODIGO del equipo Visitante: ";
+    cin >> idVisitante;
+
+    // Validacion de errores
+    if (idLocal == idVisitante) {
+        cout << "Error: Un equipo no puede jugar contra si mismo." << endl;
+    } 
+    else if (idLocal >= 0 && idLocal < nEquipos && idVisitante >= 0 && idVisitante < nEquipos) {
+        
+        // Ejecutamos las formulas de Camila
+        float pLocal = calcularProbabilidadLocal(idLocal, idVisitante);
+        float pEmpate = calcularProbabilidadEmpate(idLocal, idVisitante);
+        float pVisitante = calcularProbabilidadVisitante(idLocal, idVisitante);
+
+        // Imprimimos los resultados en pantalla
+        cout << "\n--- PRONOSTICO ESTADISTICO ---" << endl;
+        cout << equipos[idLocal].nombre << " vs " << equipos[idVisitante].nombre << endl;
+        cout << "------------------------------" << endl;
+        
+        // fixed y setprecision obligan a mostrar solo 2 decimales
+        cout << fixed << setprecision(2);
+        cout << "Victoria " << equipos[idLocal].nombre << " (Local) : " << pLocal << " %" << endl;
+        cout << "Empate                          : " << pEmpate << " %" << endl;
+        cout << "Victoria " << equipos[idVisitante].nombre << " (Visita): " << pVisitante << " %" << endl;
+        cout << "------------------------------" << endl;
+        
+        cout << "[Datos Analizados: Nivel base, Indice Ofensivo/Defensivo y Matriz Historica]" << endl;
+        
+    } else {
+        cout << "Error: Codigos de equipo no validos." << endl;
     }
-
-    return TotalUsuario(apuestas,n,usuario, pos + 1);
-}
-
-void BuscarUsuario(Apuesta apuestas[], int n)
-{
-    string usuario;
-
-    cin.ignore();
-
-    cout << "\nIngrese nombre del usuario: ";
-    getline(cin, usuario);
-
-    cout << "\n========== REPORTE DEL USUARIO ==========";
-
-    ReporteUsuario(apuestas,n,usuario,0);
-
-    cout << "\n\nTotal Apostado: "
-         << TotalUsuario(apuestas,n,usuario,0);
-
-    cout << "\n=========================================";
 }
