@@ -19,21 +19,21 @@ struct Apuesta
 
 void RegistrarApuesta(Apuesta apuestas[], int &n)
 {
-    cout << "\nID: ";
+    cout << "\nID: "; 
     cin >> apuestas[n].id;
 
     cin.ignore();
 
-    cout << "Usuario: ";
+    cout << "Usuario: "; 
     getline(cin, apuestas[n].usuario);
 
     cout << "Equipo Local: ";
     getline(cin, apuestas[n].equipo1);
 
-    cout << "Equipo Visitante: ";
+    cout << "Equipo Visitante: "; 
     getline(cin, apuestas[n].equipo2);
 
-    cout << "Resultado (Local/Empate/Visitante): ";
+    cout << "Resultado (Local/Empate/Visitante): "; 
     getline(cin, apuestas[n].resultado);
 
     cout << "Monto: ";
