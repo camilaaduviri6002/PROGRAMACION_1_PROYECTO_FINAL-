@@ -13,9 +13,6 @@ using namespace std;
 // ==========================================
 // SUBMENÚ: USUARIOS
 // ==========================================
-// ==========================================
-// SUBMENÚ: USUARIOS
-// ==========================================
 bool menuUsuarios() {
     int opcion;
     bool salirSubmenu = false;
