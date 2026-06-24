@@ -13,6 +13,9 @@ using namespace std;
 // ==========================================
 // SUBMENÚ: USUARIOS
 // ==========================================
+// ==========================================
+// SUBMENÚ: USUARIOS
+// ==========================================
 bool menuUsuarios() {
     int opcion;
     bool salirSubmenu = false;
@@ -23,8 +26,9 @@ bool menuUsuarios() {
         cout << "1. Registrar usuario" << endl;
         cout << "2. Iniciar sesion" << endl;
         cout << "3. Mostrar todos los usuarios" << endl;
-        cout << "4. Anadir Saldo a una cuenta" << endl; // NUEVA OPCION AÑADIDA
-        cout << "5. Volver" << endl;
+        cout << "4. Anadir Saldo a una cuenta" << endl;
+        cout << "5. Retirar Saldo de una cuenta" << endl; // <-- NUEVA OPCION DE RETIRO
+        cout << "6. Volver" << endl;
         cout << "Opcion: ";
         cin >> opcion;
 
@@ -37,14 +41,13 @@ bool menuUsuarios() {
         } else if (opcion == 3) {
             mostrarUsuarios();  
             system("pause");
-        } else if (opcion == 4) {
+        } else if (opcion == 4) { // LÓGICA DE DEPÓSITO
             char userDeposito[30];
             float montoDeposito;
             
             cout << "\nIngrese su username: ";
             cin >> userDeposito;
             
-            // Usamos la funcion de Alejandra para buscar si existe
             int pos = buscarUsuario(userDeposito); 
             
             if (pos != -1) {
@@ -52,9 +55,9 @@ bool menuUsuarios() {
                 cin >> montoDeposito;
                 
                 if (montoDeposito > 0) {
-                    depositarSaldo(pos, montoDeposito); // Llama a la funcion de USUARIO.cpp
+                    depositarSaldo(pos, montoDeposito);
                     cout << "\n¡Deposito exitoso!" << endl;
-                    mostrarSaldo(pos); // Imprime el nuevo saldo total
+                    mostrarSaldo(pos); 
                 } else {
                     cout << "Error: El monto debe ser mayor a 0." << endl;
                 }
@@ -62,7 +65,37 @@ bool menuUsuarios() {
                 cout << "Error: Usuario no encontrado." << endl;
             }
             system("pause");
-        } else if (opcion == 5) {
+        } else if (opcion == 5) { // <-- LÓGICA DE RETIRO
+            char userRetiro[30];
+            float montoRetiro;
+            
+            cout << "\nIngrese su username: ";
+            cin >> userRetiro;
+            
+            int pos = buscarUsuario(userRetiro); 
+            
+            if (pos != -1) {
+                mostrarSaldo(pos); // Le mostramos cuanto tiene antes de retirar
+                cout << "Ingrese el monto a retirar (Bs): ";
+                cin >> montoRetiro;
+                
+                if (montoRetiro > 0) {
+                    // Verificamos si tiene suficiente dinero accediendo a la variable global
+                    if (usuarios[pos].saldo >= montoRetiro) {
+                        retirarSaldo(pos, montoRetiro); // Llama a la funcion de Alejandra
+                        cout << "\n¡Retiro procesado exitosamente!" << endl;
+                        mostrarSaldo(pos);
+                    } else {
+                        cout << "\nError: Saldo insuficiente para realizar el retiro." << endl;
+                    }
+                } else {
+                    cout << "Error: El monto debe ser mayor a 0." << endl;
+                }
+            } else {
+                cout << "Error: Usuario no encontrado." << endl;
+            }
+            system("pause");
+        } else if (opcion == 6) {
             salirSubmenu = true;
         } else {
             cout << "Opcion invalida." << endl;
@@ -71,7 +104,6 @@ bool menuUsuarios() {
     }
     return true;
 }
-
 // ==========================================
 // SUBMENÚ: EQUIPOS
 // ==========================================
