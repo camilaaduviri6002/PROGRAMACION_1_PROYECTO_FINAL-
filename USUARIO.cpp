@@ -67,7 +67,7 @@ void registrarUsuario()
 
     strcpy(usuarios[nUsuarios].password,password);
 
-    usuarios[nUsuarios].saldo=500;
+    usuarios[nUsuarios].saldo=0;
 
     usuarios[nUsuarios].administrador=false;
 
