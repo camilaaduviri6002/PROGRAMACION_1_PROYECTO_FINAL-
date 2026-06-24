@@ -4,12 +4,15 @@
 #include "VARIABLES_GLOBALES.h"
 #include "USUARIO.h"
 #include "SIMULADOR.h"
-#include "MOTOR_APUESTAS.h" // Corregido a mayusculas
+#include "MOTOR_APUESTAS.h" 
+#include "PREDICCION.h" // Se añade la libreria de Camila
 #include "MENUS.h"
 
 using namespace std;
 
+// ==========================================
 // SUBMENÚ: USUARIOS
+// ==========================================
 bool menuUsuarios() {
     int opcion;
     bool salirSubmenu = false;
@@ -43,7 +46,9 @@ bool menuUsuarios() {
     return true;
 }
 
+// ==========================================
 // SUBMENÚ: EQUIPOS
+// ==========================================
 bool menuEquipos() {
     int opcion;
     bool salirSubmenu = false;
@@ -74,7 +79,9 @@ bool menuEquipos() {
     return true;
 }
 
-// SUBMENÚ: APUESTAS (Corregido para encajar con el codigo de Camila)
+// ==========================================
+// SUBMENÚ: APUESTAS
+// ==========================================
 bool menuApuestas() {
     int opcion;
     bool salirSubmenu = false;
@@ -90,7 +97,6 @@ bool menuApuestas() {
         cin >> opcion;
 
         if (opcion == 1) {
-            // Llama a la funcion de Camila (ya guarda en binario por dentro)
             registrarApuesta();
             system("pause");
         } else if (opcion == 2) {
@@ -116,7 +122,9 @@ bool menuApuestas() {
     return true;
 }
 
+// ==========================================
 // SUBMENÚ: SIMULADOR DE PARTIDOS
+// ==========================================
 bool menuSimulador() {
     int idLocal;
     int idVisitante;
@@ -145,7 +153,9 @@ bool menuSimulador() {
     return simulacionExitosa;
 }
 
+// ==========================================
 // MENÚ PRINCIPAL
+// ==========================================
 bool menuPrincipal() {
     int opcion;
     bool salirSistema = false;
@@ -157,7 +167,7 @@ bool menuPrincipal() {
         cout << "====================================" << endl;
         cout << "1. Usuarios" << endl;
         cout << "2. Equipos" << endl;
-        cout << "3. Prediccion (En construccion)" << endl;
+        cout << "3. Prediccion" << endl;
         cout << "4. Apuestas" << endl;
         cout << "5. Partido en vivo" << endl;
         cout << "6. Salir" << endl;
@@ -169,7 +179,8 @@ bool menuPrincipal() {
         } else if (opcion == 2) {
             menuEquipos();
         } else if (opcion == 3) {
-            cout << "\n[Modulo de prediccion en integracion...]" << endl;
+            // Se llama a la funcion matematicas de prediccion
+            mostrarPrediccion();
             system("pause");
         } else if (opcion == 4) {
             menuApuestas();
