@@ -64,7 +64,7 @@ bool simularPartidoVivo(int indiceLocal, int indiceVisitante) {
         if (minuto > 90) {
             partidoEnCurso = false;
         } else {
-            Sleep(200); 
+            Sleep(800); 
         }
     }
 
