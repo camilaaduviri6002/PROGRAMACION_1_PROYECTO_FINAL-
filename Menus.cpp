@@ -24,13 +24,13 @@ bool menuUsuarios() {
         cin >> opcion;
 
         if (opcion == 1) {
-            registrarUsuario(); // Funcion de USUARIO.h
+            registrarUsuario(); 
             system("pause");
         } else if (opcion == 2) {
-            iniciarSesion();    // Funcion de USUARIO.h
+            iniciarSesion();    
             system("pause");
         } else if (opcion == 3) {
-            mostrarUsuarios();  // Funcion de USUARIO.h
+            mostrarUsuarios(); 
             system("pause");
         } else if (opcion == 4) {
             salirSubmenu = true;
@@ -92,7 +92,6 @@ bool menuPrincipal() {
             system("pause");
         } else if (opcion == 4) {
             cout << "\n[Llamar funciones de MotorApuestas.h]" << endl;
-            // RegistrarApuesta(apuestas, nApuestas);
             system("pause");
         } else if (opcion == 5) {
             menuSimulador();
