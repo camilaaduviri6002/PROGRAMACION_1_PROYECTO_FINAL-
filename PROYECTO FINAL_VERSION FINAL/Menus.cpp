@@ -24,7 +24,7 @@ bool menuUsuarios() {
         cout << "2. Iniciar sesion" << endl;
         cout << "3. Mostrar todos los usuarios" << endl;
         cout << "4. Anadir Saldo a una cuenta" << endl;
-        cout << "5. Retirar Saldo de una cuenta" << endl; // <-- NUEVA OPCION DE RETIRO
+        cout << "5. Retirar Saldo de una cuenta" << endl; 
         cout << "6. Volver" << endl;
         cout << "Opcion: ";
         cin >> opcion;
@@ -38,7 +38,7 @@ bool menuUsuarios() {
         } else if (opcion == 3) {
             mostrarUsuarios();
             system("pause");
-        } else if (opcion == 4) { // LÓGICA DE DEPÓSITO
+        } else if (opcion == 4) { 
             char userDeposito[30];
             float montoDeposito;
 
@@ -62,7 +62,7 @@ bool menuUsuarios() {
                 cout << "Error: Usuario no encontrado." << endl;
             }
             system("pause");
-        } else if (opcion == 5) { // <-- LÓGICA DE RETIRO
+        } else if (opcion == 5) {
             char userRetiro[30];
             float montoRetiro;
 
@@ -72,14 +72,13 @@ bool menuUsuarios() {
             int pos = buscarUsuario(userRetiro);
 
             if (pos != -1) {
-                mostrarSaldo(pos); // Le mostramos cuanto tiene antes de retirar
+                mostrarSaldo(pos); 
                 cout << "Ingrese el monto a retirar (Bs): ";
                 cin >> montoRetiro;
 
                 if (montoRetiro > 0) {
-                    // Verificamos si tiene suficiente dinero accediendo a la variable global
                     if (usuarios[pos].saldo >= montoRetiro) {
-                        retirarSaldo(pos, montoRetiro); // Llama a la funcion de Alejandra
+                        retirarSaldo(pos, montoRetiro); 
                         cout << "\n¡Retiro procesado exitosamente!" << endl;
                         mostrarSaldo(pos);
                     } else {
@@ -101,7 +100,6 @@ bool menuUsuarios() {
     }
     return true;
 }
-
 // ==========================================
 // SUBMENÚ: EQUIPOS
 // ==========================================
@@ -200,9 +198,6 @@ bool menuEquipos()
 
     return true;
 }
-
-
-
 // ==========================================
 // SUBMENÚ: APUESTAS
 // ==========================================
