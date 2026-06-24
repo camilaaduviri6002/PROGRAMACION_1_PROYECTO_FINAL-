@@ -16,4 +16,4 @@ float calcularProbabilidadVisitante(int codigoLocal,int codigoVisitante);
 void mostrarPrediccion();
 
 
-#endif // PREDICCION_H_INCLUDED
+#endif 
