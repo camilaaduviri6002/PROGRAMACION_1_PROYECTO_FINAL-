@@ -1,14 +1,12 @@
 #include <iostream>
 #include <cstdlib>
-#include <windows.h> // Para el uso de Sleep()
-
+#include <windows.h> 
 #include "VARIABLES_GLOBALES.h"
 #include "BASE_DE_DATOS.h"
 #include "SIMULADOR.h"
 
 using namespace std;
 
-// Funcion auxiliar interna para el random
 int calcularEventoAleatorio(int limiteInferior, int limiteSuperior) {
     return limiteInferior + rand() % (limiteSuperior - limiteInferior + 1);
 }
@@ -50,14 +48,14 @@ bool simularPartidoVivo(int indiceLocal, int indiceVisitante) {
 
         if (probabilidadEvento >= 1 && probabilidadEvento <= 3) {
             golesL++;
-            cout << "¡GOOOOOOOOOOOOOOOL DE " << equipos[indiceLocal].nombre << "!" << endl;
+            cout << "Â¡GOOOOOOOOOOOOOOOL DE " << equipos[indiceLocal].nombre << "!" << endl;
             Sleep(2000);
         } else if (probabilidadEvento >= 4 && probabilidadEvento <= 6) {
             golesV++;
-            cout << "¡GOOOOOOOOOOOOOOOL DE " << equipos[indiceVisitante].nombre << "!" << endl;
+            cout << "Â¡GOOOOOOOOOOOOOOOL DE " << equipos[indiceVisitante].nombre << "!" << endl;
             Sleep(2000);
         } else if (probabilidadEvento == 50) {
-            cout << "¡Falta peligrosa! Tarjeta Amarilla." << endl;
+            cout << "Â¡Falta peligrosa! Tarjeta Amarilla." << endl;
             Sleep(1500);
         }
 
@@ -66,31 +64,24 @@ bool simularPartidoVivo(int indiceLocal, int indiceVisitante) {
         if (minuto > 90) {
             partidoEnCurso = false;
         } else {
-            Sleep(200); // Velocidad del simulador
+            Sleep(200); 
         }
     }
 
     system("cls");
     imprimirMarcador(90, golesL, golesV, indiceLocal, indiceVisitante);
-    
-    // --- ACTUALIZACION DE BASE DE DATOS GLOBAL ---
-    
-    // 1. Sumar goles a la matriz historica
     matrizGoles[indiceLocal][indiceVisitante] += golesL;
     matrizGoles[indiceVisitante][indiceLocal] += golesV;
     
-    // 2. Sumar victorias si corresponde
     if (golesL > golesV) {
         matrizVictorias[indiceLocal][indiceVisitante] += 1;
-        cout << "\n¡Victoria para " << equipos[indiceLocal].nombre << "!" << endl;
+        cout << "\nÂ¡Victoria para " << equipos[indiceLocal].nombre << "!" << endl;
     } else if (golesV > golesL) {
         matrizVictorias[indiceVisitante][indiceLocal] += 1;
-        cout << "\n¡Victoria para " << equipos[indiceVisitante].nombre << "!" << endl;
+        cout << "\nÂ¡Victoria para " << equipos[indiceVisitante].nombre << "!" << endl;
     } else {
-        cout << "\n¡El partido termina en Empate!" << endl;
+        cout << "\nÂ¡El partido termina en Empate!" << endl;
     }
-
-    // 3. Guardar cambios en disco inmediatamente
     guardarMatrizGoles();
     guardarMatrizVictorias();
     
