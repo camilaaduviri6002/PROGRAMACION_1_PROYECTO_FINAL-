@@ -9,4 +9,4 @@ bool existeBaseDatos();
 void inicializarSistema();
 
 
-#endif // INICIAR_SISTEMA_H_INCLUDED
+#endif
